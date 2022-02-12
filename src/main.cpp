@@ -1,17 +1,13 @@
 #include "context.hpp"
 #include "gpio.hpp"
-#include "istate.hpp"
-#include "mainLogic.hpp"
-#include "stateBoot.hpp"
-#include "stateIdle.hpp"
+#include "motorControl.hpp"
+#include "states.hpp"
 #include "timer.hpp"
-
 #include <msp430.h>
 
 namespace
 {
     Context g_context{
-        MainState::Boot,
         {2, 5, true},
         {1, 4, true},
         {1, 0, true},
@@ -31,9 +27,8 @@ namespace
         Direction::Forward,
     };
 
-    StateBoot stateBoot;
-    StateIdle stateIdle;
-    IState *const g_mainStates[] = {&stateBoot, nullptr, nullptr, nullptr};
+    States g_app;
+    MotorControl g_motor;
 }
 
 // Definition of the error function to call if the constructor goes bonkers
@@ -41,6 +36,15 @@ extern "C" void __cxa_pure_virtual()
 {
     while (1)
         ;
+}
+MotorControl &motor()
+{
+    return g_motor;
+}
+
+States &app()
+{
+    return g_app;
 }
 
 int main(void)
@@ -100,11 +104,11 @@ int main(void)
 
 __interrupt_vec(PORT1_VECTOR) void port1_ISR(void)
 {
-    g_mainStates[static_cast<uint8_t>(g_context.currentState)]->gpio();
+    g_app.gpio();
 }
 __interrupt_vec(PORT2_VECTOR) void port2_ISR(void)
 {
-    g_mainStates[static_cast<uint8_t>(g_context.currentState)]->gpio();
+    g_app.gpio();
 }
 __interrupt_vec(ADC10_VECTOR) void adc_ISR(void)
 {
@@ -123,18 +127,14 @@ __interrupt_vec(WDT_VECTOR) void wdt_ISR(void)
     const auto alarm = Timer::tick();
     if (alarm)
     {
+        g_app.tick();
         g_context.ledBlink.tick();
         g_context.ledErrBlink.tick();
-        g_mainStates[static_cast<uint8_t>(g_context.currentState)]->tick();
+        g_motor.tick();
     }
 }
 
 Context &context()
 {
     return g_context;
-}
-
-void setState(const MainState newState)
-{
-    g_context.currentState = newState;
 }

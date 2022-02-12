@@ -14,21 +14,16 @@ link_directories(${COMPILER_DIR}/../include)
 
 add_executable(${PROJECT_NAME}
   src/main.cpp
-  src/mainLogic.cpp
-  src/mainLogic.hpp
   src/gpio.hpp
   src/timer.cpp
   src/timer.hpp
   src/context.cpp
   src/context.hpp
   src/blinker.hpp
-  src/istate.hpp
-  src/stateBoot.cpp
-  src/stateBoot.hpp
-  src/stateIdle.cpp
-  src/stateIdle.hpp
-  src/stateActive.cpp
-  src/stateActive.hpp
+  src/states.cpp
+  src/states.hpp
+  src/motorControl.cpp
+  src/motorControl.hpp
 )
 
 # target_link_libraries(${PROJECT_NAME} PRIVATE )

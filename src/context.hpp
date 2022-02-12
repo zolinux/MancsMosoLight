@@ -3,13 +3,6 @@
 #include "blinker.hpp"
 #include "gpio.hpp"
 
-enum class MainState
-{
-    Boot,
-    Idle,
-    Active,
-};
-
 enum class Speed
 {
     Slow,
@@ -28,7 +21,8 @@ enum class Direction
     Forward,
     Backward,
 };
-
+const uint8_t numberOfModes = 2;
+const uint8_t numberOfDirections = 2;
 const uint8_t pwmDutyVsSpeed[] = {45, 75, 100};
 const uint8_t ledBlinkRatesVsSpeed[] = {3, 2, 1};
 const uint8_t ledBlinkCountSpeedChange = 8U;
@@ -36,7 +30,6 @@ const uint16_t lowVoltageThreshold = 444U;
 
 struct Context
 {
-    MainState currentState;
     Gpio swOn;
     Gpio swFunc;
     Gpio irIn;
@@ -65,4 +58,3 @@ struct Context
 };
 
 Context &context();
-void setState(const MainState newState);
