@@ -55,6 +55,10 @@ struct Context
     uint16_t readAdc(const uint8_t channel);
     void blinkSpeedLed();
     void incrementSpeed();
+
+    Context(const Context &) = delete;
+    Context(const Context &&) = delete;
+    Context &operator=(const Context &) = delete;
 };
 
 Context &context();

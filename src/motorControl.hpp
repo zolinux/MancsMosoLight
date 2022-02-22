@@ -15,7 +15,18 @@ public:
 
 private:
     void doStopMotor();
+
+    /**
+     * @brief Start motor with full power
+     *
+     */
     void doStartMotor();
+
+    /**
+     * @brief Drive motor by PWM
+     *
+     * @param pwmPercent duty cycle [%]
+     */
     void doStartMotor(uint8_t pwmPercent);
 };
 

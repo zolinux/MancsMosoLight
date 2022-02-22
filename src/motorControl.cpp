@@ -108,15 +108,38 @@ void MotorControl::stopMotor()
 
 void MotorControl::doStartMotor()
 {
+    auto &c = context();
+    Gpio *const fetArray[] = {&c.motorHP, &c.motorHN, &c.motorLP, &c.motorLN};
+    uint8_t toSetIdx = c.dir == Direction::Forward ? 0 : 2;
+
+    // enable motor +Vbat, order is important
+    fetArray[toSetIdx + 1]->set();
+    fetArray[toSetIdx]->set();
+
+    const auto fetCount = sizeof(fetArray) / sizeof(*fetArray);
+    toSetIdx += fetCount / 2;
+    if (toSetIdx >= fetCount)
+        toSetIdx = 0;
+
+    // enable motor -Vbat, order is important
+    fetArray[toSetIdx]->clear();
+    fetArray[toSetIdx + 1]->clear();
 }
 
 void MotorControl::doStartMotor(uint8_t pwmPercent)
 {
+    // ToDo: implement
     (void)pwmPercent;
 }
 
 void MotorControl::doStopMotor()
 {
+    auto &c = context();
+
+    c.motorHP.clear();
+    c.motorHN.set();
+    c.motorLP.clear();
+    c.motorLN.set();
 }
 
 MotorControl::~MotorControl()
