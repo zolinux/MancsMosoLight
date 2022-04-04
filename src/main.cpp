@@ -5,6 +5,11 @@
 #include "timer.hpp"
 #include <msp430.h>
 
+#define TEST 2
+#if TEST == 2
+volatile bool timeElapsed = false;
+#endif
+
 namespace
 {
     Context g_context{
@@ -53,19 +58,48 @@ int main(void)
     // stop WDT
     Timer::stop();
 
-#ifdef TEST
-    P1DIR |= 0x01; // Set P1.0 to output direction
+    // configure 32khz clock
+    BCSCTL1 = XT2OFF;
+    BCSCTL2 = SELM_3 | SELS;
 
+#if TEST == 1
+    P2DIR |= 0x18; // Set LEDs to output direction
+    P2OUT |= 0x18;
+    P2SEL &= (~0x18);
     for (;;)
     {
         volatile unsigned int i; // volatile to prevent optimization
 
-        P1OUT ^= 0x01; // Toggle P1.0 using exclusive-OR
+        P2OUT ^= 0x18; // Toggle P1.0 using exclusive-OR
 
         i = 10000; // SW Delay
         do
             i--;
         while (i != 0);
+    }
+#elif TEST == 2
+    Gpio led1(2, 3, false);
+    Gpio led2(2, 4, false);
+    Gpio sw1(2, 5, true);
+    uint8_t ctr = 1U;
+
+    led1.set();
+    led2.set();
+    Timer::init();
+    Timer::setInterval(WdtInterval::MS1000);
+    __enable_interrupt();
+
+    for (;;)
+    {
+        ctr++;
+        led2 << static_cast<bool>(ctr & 1);
+        while (!timeElapsed)
+        {
+            if (sw1)
+                led1.toggle();
+        }
+
+        timeElapsed = false;
     }
 #else
 
@@ -127,10 +161,14 @@ __interrupt_vec(WDT_VECTOR) void wdt_ISR(void)
     const auto alarm = Timer::tick();
     if (alarm)
     {
+#if TEST == 2
+        timeElapsed = true;
+#else
         g_app.tick();
         g_context.ledBlink.tick();
         g_context.ledErrBlink.tick();
         g_motor.tick();
+#endif
     }
 }
 

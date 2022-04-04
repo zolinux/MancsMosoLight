@@ -9,16 +9,18 @@ cmake --build c:/Work/build/MancsMosoLight-msp430-gcc-Debug --config Debug --tar
 
 # Flashing the MCU
 
+For flashing, a 3.3V USB-UART converter is needed.
+
 ## BSLDEMO.EXE
 
 ```
-cd "C:\ti\BSL-Scripter\DEPRECATED\BSLDEMO\BSLDEMO.exe"
+cd "C:\ti\BSL-Scripter\DEPRECATED\BSLDEMO"
 .\BSLDEMO.exe -tUSB serial -cCOM17 -aPATCH.TXT -pint_vect.txt
 ```
 
 ## msp430-bsl.exe
 
-- With python 2: istall via `pip`
+- With python 2: install via `pip`
   ```
   c:\Users\user\AppData\Roaming\Python\Python310\Scripts\msp430-bsl.exe --replace-bsl  -r -b -p COM17 -P -V -v -S ..\build\MancsMosoLight-msp430-gcc-Debug\mml.elf
   ```

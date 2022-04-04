@@ -7,23 +7,27 @@ class Gpio
 {
     struct port_t
     {
-        volatile unsigned char in;
-        volatile unsigned char out;
-        volatile unsigned char dir;
-        volatile unsigned char ifg;
-        volatile unsigned char ies;
-        volatile unsigned char ie;
-        volatile unsigned char sel;
+        volatile uint8_t in;
+        volatile uint8_t out;
+        volatile uint8_t dir;
+        volatile uint8_t ifg;
+        volatile uint8_t ies;
+        volatile uint8_t ie;
+        volatile uint8_t sel;
     } __attribute__((__packed__));
+    static_assert(sizeof(port_t) == 7);
 
-    port_t *const m_port;
+    volatile port_t *const m_port;
     const uint8_t m_bit;
     const uint8_t m_mask;
 
 public:
     Gpio(const uint8_t port, const uint8_t bit)
-    : m_port(reinterpret_cast<port_t *>(port == 1 ? P1IN : P2IN)), m_bit(bit), m_mask(1 << bit)
+    : m_port(reinterpret_cast<volatile port_t *>(port == 1 ? &P1IN : &P2IN)),
+      m_bit(bit),
+      m_mask(1 << bit)
     {
+        setSelection(false);
     }
     Gpio(const uint8_t port, const uint8_t bit, bool in) : Gpio(port, bit)
     {
@@ -85,5 +89,11 @@ public:
     operator bool() const
     {
         return m_port->in & m_mask;
+    }
+
+    Gpio &operator<<(bool value)
+    {
+        value ? set() : clear();
+        return *this;
     }
 };

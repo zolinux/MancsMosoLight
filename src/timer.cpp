@@ -28,8 +28,8 @@ namespace
     void startInterval(WdtInterval interval)
     {
         auto reg = WDTCTL;
-        reg &= ~(dividerMask | 0xFF00);
-        reg |= WDTPW | static_cast<uint8_t>(interval) << WDTIS0;
+        reg &= ~(dividerMask | 0xFF00 | WDTHOLD);
+        reg |= WDTPW | WDTTMSEL | WDTCNTCL | WDTSSEL | static_cast<uint8_t>(interval);
         WDTCTL = reg;
     }
     WdtInterval getInterval(uint32_t ms)
