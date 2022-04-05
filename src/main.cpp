@@ -95,7 +95,7 @@ int main(void)
         led1.toggle();
         while (!timeElapsed)
         {
-            if (false && sw1)
+            if (sw1)
                 led1.toggle();
         }
         timeElapsed = false;

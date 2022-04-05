@@ -7,7 +7,7 @@ class Gpio
 {
     struct port_t
     {
-        volatile uint8_t in;
+        volatile const uint8_t in;
         volatile uint8_t out;
         volatile uint8_t dir;
         volatile uint8_t ifg;
