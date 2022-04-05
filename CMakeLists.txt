@@ -8,12 +8,15 @@ set(CMAKE_SYSTEM_NAME Generic)
 project(mml VERSION 0.1.0 LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
+set(TESTAPP "3" CACHE STRING "Which test-app to build, 0 is real APP")
 get_filename_component(COMPILER_DIR ${CMAKE_C_COMPILER} DIRECTORY)
 include_directories(SYSTEM ${COMPILER_DIR}/../include)
 link_directories(${COMPILER_DIR}/../include)
 
 add_executable(${PROJECT_NAME}
-  src/main.cpp
+  $<IF:$<BOOL:${TESTAPP}>,src/test.cpp,src/main.cpp>
+  src/common.cpp
+  src/common.hpp
   src/gpio.hpp
   src/timer.cpp
   src/timer.hpp
@@ -33,6 +36,10 @@ target_include_directories(${PROJECT_NAME}
   ${CMAKE_CURRENT_LIST_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}
 )
+
+if("${TESTAPP}" GREATER "0")
+  target_compile_definitions(${PROJECT_NAME} PRIVATE TEST=${TESTAPP})
+endif()
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR})
 target_compile_definitions(${PROJECT_NAME} PRIVATE VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR})
