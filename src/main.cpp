@@ -59,7 +59,6 @@ int main(void)
     Timer::stop();
 
     // configure 32khz clock
-    BCSCTL1 = XT2OFF;
     BCSCTL2 = SELM_3 | SELS;
 
 #if TEST == 1
@@ -83,22 +82,22 @@ int main(void)
     Gpio sw1(2, 5, true);
     uint8_t ctr = 1U;
 
-    led1.set();
+    led1.clear();
     led2.set();
     Timer::init();
     Timer::setInterval(WdtInterval::MS1000);
-    __enable_interrupt();
+    _enable_interrupts();
 
     for (;;)
     {
         ctr++;
         led2 << static_cast<bool>(ctr & 1);
+        led1.toggle();
         while (!timeElapsed)
         {
-            if (sw1)
+            if (false && sw1)
                 led1.toggle();
         }
-
         timeElapsed = false;
     }
 #else

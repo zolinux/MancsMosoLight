@@ -27,10 +27,9 @@ namespace
     }
     void startInterval(WdtInterval interval)
     {
-        auto reg = WDTCTL;
-        reg &= ~(dividerMask | 0xFF00 | WDTHOLD);
-        reg |= WDTPW | WDTTMSEL | WDTCNTCL | WDTSSEL | static_cast<uint8_t>(interval);
-        WDTCTL = reg;
+        (void)interval;
+        WDTCTL = WDTPW | WDTTMSEL | WDTCNTCL | WDTSSEL | static_cast<uint8_t>(interval);
+        IE1 = 1;
     }
     WdtInterval getInterval(uint32_t ms)
     {
