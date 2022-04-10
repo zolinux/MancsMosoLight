@@ -9,7 +9,7 @@
 namespace
 {
     volatile bool timeElapsed = false;
-    volatile bool swOnPressed = false;
+    volatile uint32_t swOnPressTime = 0;
 }
 
 int main(void)
@@ -71,14 +71,10 @@ int main(void)
 
     while (true)
     {
-        if (timeElapsed)
+        if (timeElapsed && swOnPressTime && !ctx.led && Timer::elapsed(swOnPressTime, 250U))
         {
-            if (swOnPressed)
-            {
-                ctx.ledBlink.setCount(4);
-                swOnPressed = false;
-            }
             timeElapsed = false;
+            swOnPressTime = 0;
         }
     }
 #else
@@ -120,8 +116,12 @@ __interrupt_vec(PORT2_VECTOR) void port2_ISR(void)
 #if TEST == 3
     if (context().swOn.interrupt())
     {
-        swOnPressed = true;
         context().swOn.clearInterruptFlag();
+        if (!swOnPressTime)
+        {
+            swOnPressTime = Timer::now();
+            context().ledBlink.setCount(4);
+        }
     }
 #endif
     // P2IFG = 0;

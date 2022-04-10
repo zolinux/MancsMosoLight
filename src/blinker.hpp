@@ -24,10 +24,8 @@ public:
     }
     void setCount(uint8_t count)
     {
-        __disable_interrupt();
-        m_count = count;
         m_ctr = m_rate;
-        __enable_interrupt();
+        m_count = count;
     }
 
     void tick()
