@@ -16,7 +16,6 @@ link_directories(${COMPILER_DIR}/../include)
 add_executable(${PROJECT_NAME}
   $<IF:$<BOOL:${TESTAPP}>,src/test.cpp,src/main.cpp>
   src/common.cpp
-  src/common.hpp
   src/gpio.hpp
   src/timer.cpp
   src/timer.hpp
