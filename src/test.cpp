@@ -68,7 +68,9 @@ int main(void)
 
     ctx.led.clear();
     ctx.ledBlink.setRate(1);
-    ctx.ledBlink.setCount(10); // at the end LED will be off
+    ctx.ledBlink.setCount(10);                        // at the end LED will be off
+    ctx.ledErrBlink.setRate(3);                       // slower
+    ctx.ledErrBlink.setCount(Blinker::CountInfinite); // continuous blinking
 
     while (true)
     {
@@ -78,33 +80,40 @@ int main(void)
             swOnPressTime = 0;
         }
     }
-#else
-
-    ctx.swFunc.setInterruptEnabledEdge(true);
-    ctx.swFunc.setInterruptEnabled(true);
-    ctx.irIn.setInterruptEnabledEdge(false);
-
+#elif TEST == 4 // test motor
     Timer::init();
-    // Timer::setInterval(500);
-    // __low_power_mode_3();
-    // ctx.led.clear();
+    Timer::setInterval(WdtInterval::MS250);
+    ctx.led.clear();
+    ctx.ledErr.clear();
 
-    // // initialize main logic with parameters
-    // Main m;
-    // mainLogic = &m;
-
-    // Timer::reset();
-    // Timer::setInterval(WdtInterval::MS250);
-
-    // go to sleep and wait for power switch
-    // m.deepSleep();
-    __enable_interrupt();
+    static const uint32_t runDuration = 5000U;
+    volatile uint32_t motorTime = 0;
+    volatile bool running = false;
+    ctx.rotationMode = RotationMode::OneWay;
 
     while (true)
     {
-        __low_power_mode_3();
-        // everything is interrupt based, the MCU is sleeping in most time
+        if (Timer::elapsed(motorTime, runDuration))
+        {
+            auto &m = motor();
+
+            if (running)
+            {
+                // m.stopMotor();
+                ctx.led.clear();
+            }
+            else
+            {
+                ctx.led.set();
+                // m.startMotor();
+            }
+            running ^= true;
+
+            motorTime = Timer::now();
+            (void)m;
+        }
     }
+
 #endif
     return 0;
 }
@@ -144,11 +153,15 @@ __interrupt_vec(WDT_VECTOR) void wdt_ISR(void)
     const auto alarm = Timer::tick();
     if (alarm)
     {
-        timeElapsed = true;
-#if TEST == 3
         auto &ctx = context();
+        timeElapsed = true;
+#if TEST == 3 || TEST == 4
         ctx.ledBlink.tick();
         ctx.ledErrBlink.tick();
+#endif
+#if TEST == 4
+        //        motor().tick();
+        ctx.ledErr.toggle();
 #endif
     }
 }
