@@ -12,7 +12,7 @@ private:
 
 public:
     static const uint8_t CountInfinite = UINT8_MAX;
-    Blinker(Gpio *gpio) : m_gpio(gpio), m_count(CountInfinite), m_rate(2), m_ctr(2)
+    Blinker(Gpio *gpio) : m_gpio(gpio), m_count(0), m_rate(2), m_ctr(2)
     {
     }
     ~Blinker() = default;

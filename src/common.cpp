@@ -13,10 +13,10 @@ namespace
         {2, 4, false, false},
         {2, 1, false, false},
         {1, 3, false, false},
-        {1, 5, false, true},
-        {1, 2, false, false},
-        {1, 7, false, true},
-        {1, 6, false, false},
+        {1, 5, false, true},  // HN
+        {1, 2, false, false}, // HP
+        {1, 7, false, true},  // LN
+        {1, 6, false, false}, // LP
         {&g_context.ledErr},
         {&g_context.led},
         0,
