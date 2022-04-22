@@ -1,0 +1,51 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Flash",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "cwd": "c:/w/python-msp430-tools"
+                }
+            },
+            "command": "py",
+            "args": [
+                "-m",
+                "msp430.bsl",
+                "-S",
+                "--invert-reset",
+                "-p",
+                "COM17",
+                // "-v",
+                "-e",
+                "-P",
+                "${command:cmake.launchTargetPath}"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Reset",
+            "type": "shell",
+            "windows": {
+                "options": {
+                    "cwd": "c:/w/python-msp430-tools"
+                }
+            },
+            "command": "py",
+            "args": [
+                "-m",
+                "msp430.bsl",
+                "-S",
+                "--invert-reset",
+                "-p",
+                "COM17",
+                // "-v",
+                "-r"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

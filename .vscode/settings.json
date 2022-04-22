@@ -1,0 +1,7 @@
+{
+    "cmake.configureArgs": [
+        "-DCMAKE_SYSTEM_PROCESSOR=msp430f1132",
+        "-DCMAKE_TOOLCHAIN_FILE=cmake/gcc-msp430.cmake",
+        // "-DMML_ENABLE_TESTS=OFF",
+    ]
+}
